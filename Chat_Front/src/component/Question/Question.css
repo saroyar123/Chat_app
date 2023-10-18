@@ -1,0 +1,145 @@
+/* Question.css */
+
+/* Styles for the entire question component */
+.question-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  
+  /* min-height: 100vh; */
+}
+
+/* Common style for input fields */
+.input-field {
+  padding: 10px;
+  width: 100%;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+/* Style for the "Ask Your Question" section */
+.ask-question-container {
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  text-align: center;
+  border: 1px solid red;
+  margin: 60px;
+  width: 60%;
+}
+
+.ask-Question-from{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.ask-Question-from input{
+ width: 50%;
+ padding: 10px;
+}
+
+.similar-questions{
+  max-height: 200px;
+  overflow-y: auto;
+}
+.similar-questions h2{
+  padding: 10px;
+  border: 1px solid red;
+  margin: 5px;
+}
+
+/* Styles for the dropdown and menu items */
+.question-dropdown {
+  width: 80%;
+  max-height: 200px; /* Set a maximum height to make the items scrollable */
+  overflow-y: auto;
+}
+
+.question-content-button {
+  white-space: normal; /* Allow text to wrap and display full content */
+  text-align: left; /* Ensure text alignment to the left */
+  overflow-y: auto;
+  border: 1px solid rgb(105, 110, 207);
+}
+
+/* Style for the "Submit" button in the dialog */
+.submit-button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+/* Button hover effect */
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+/* Style for the question buttons */
+.question-button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 10px 0;
+  transition: background-color 0.3s ease;
+  text-align: left;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Button hover effect */
+.question-button:hover {
+  background-color: #0056b3;
+}
+
+.dialog-question-container{
+  padding: 20px;
+  background-color: #ecdede;
+}
+
+
+/* Dialog Box */
+.dialog-form-container{
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ flex-direction: column;
+ padding: 30px;
+}
+
+
+.dialog-answer-container{
+  background-color: #6fe297;
+}
+.dialog-answer-container h4{
+  padding: 10px;
+}
+
+.dialog-answer-container h2{
+  padding-left: 20px;
+  padding-bottom: 30px;
+}
+
+
+.answer-input {
+  padding: 10px;
+  width: 100%;
+  height: 150px; /* Adjust the height as needed */
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  resize: vertical; /* Allows vertical resizing of the textarea */
+}

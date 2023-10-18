@@ -1,0 +1,199 @@
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Button, Dialog, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { getQuestionAction, similarQuestionAction } from '../../action/questionAction';
+import './Question.css'; // Import your CSS file
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+
+const Question = () => {
+    const [openDialog, setOpenDialog] = useState(false);
+    const [ans, setAns] = useState('');
+    const [questionInfo, setQuestionInfo] = useState({});
+    const [askQuestion, setAskQuestion] = useState("")
+    const [userId, setUserId] = useState("")
+    const dispatch = useDispatch();
+    const [client, setClient] = useState("")
+    const [success, setSuccess] = useState(1);
+    const { loading, data } = useSelector((state) => state.question);
+    const { data: simiData, loading: simiLoading } = useSelector((state) => state.similarQuestion)
+
+    useEffect(() => {
+        setClient(sessionStorage.getItem("role"))
+        const domain = sessionStorage.getItem("domain");
+        console.log(domain, client)
+        dispatch(getQuestionAction(domain));
+    }, [dispatch, getQuestionAction]);
+
+    const submitHandler = (e) => {
+        e.preventDefault();
+        console.log();
+        // Your axios post request here
+    };
+
+    const askQuestioHandler = async (e) => {
+        e.preventDefault();
+        setSuccess(2);
+        const response = await axios.post("http://localhost:4000/api/v1/addQuestion", { userId, askQuestion });
+        console.log(response)
+        if (response.data.success == true)
+            setSuccess(3);
+        else
+            setSuccess(4)
+
+    }
+
+    const openDialogHandler = (value) => {
+        setOpenDialog(true);
+        setQuestionInfo({ ...value });
+        console.log(questionInfo);
+    };
+
+    const closeDialogHandler = () => {
+        setOpenDialog(false);
+        setQuestionInfo({});
+    };
+
+    return (
+        <div className="question-container">
+            {loading ? (
+                <h1>Loading</h1>
+            ) : (
+                <>
+                    {data != null ? (
+                        <>
+                            <ShowQuestion data={data.data.notAnsQuestion} openDialogHandler={openDialogHandler} typeQuestion={"Not Answer Questions"} />
+                            <ShowQuestion data={data.data.ansQuestion} openDialogHandler={openDialogHandler} typeQuestion={"Answer Questions"} />
+                        </>
+
+                    ) : (
+                        <></>
+                    )
+                    }
+                    <>
+                        {client === "client" ? (
+                            <div className='ask-question-container'>
+                                {success > 2 ? success === 3 ? <>
+                                    <button onClick={() => {
+                                        setSuccess(1);
+                                        setUserId("");
+                                        setAskQuestion("");
+                                    }
+                                    }>Ask Again</button>
+                                    <h1>Your question is added</h1>
+                                </> :
+                                    <>
+                                        <button onClick={() => {
+                                            setSuccess(1);
+                                            setUserId("");
+                                            setAskQuestion("");
+                                        }}>Try Again</button>
+                                        <h1>Somethig i wrong</h1>
+                                    </>
+                                    : <>
+                                        <h1>Ask Your Question</h1>
+                                        <form className='ask-Question-from' onSubmit={askQuestioHandler}>
+                                            <input className="question-input" placeholder='Enter your id' value={userId} onChange={(e) => setUserId(e.target.value)} />
+                                            <textarea
+                                                className="answer-input"
+                                                placeholder='Give your answer'
+                                                value={askQuestion}
+                                                onChange={(e) => {
+                                                    setAskQuestion(e.target.value)
+                                                    dispatch(similarQuestionAction(askQuestion))
+                                                }} />
+                                            <button type='submit'>Ask</button>
+                                        </form>
+                                        <div className='similar-questions'>
+                                            {
+                                                simiData != null ? <>
+                                                    {simiLoading ? <h1>Loading...</h1> :
+                                                        <>
+                                                            {
+                                                                simiData.success ? <>
+                                                                    {
+                                                                        simiData.similarQuestion.slice(0, Math.min(5, simiData.similarQuestion.length)).map((value, index) => (
+                                                                            <h2>{value}</h2>
+                                                                        ))
+                                                                    }
+                                                                </> : <></>
+                                                            }
+                                                        </>
+                                                    }
+                                                </> : <></>
+                                            }
+
+                                        </div>
+                                    </>}
+                            </div>
+
+                        ) : (
+                            <></>
+                        )}
+                    </>
+                    <Dialog onClose={closeDialogHandler} open={openDialog}>
+                        <div >
+                            <h2 className='dialog-question-container'>{questionInfo.messageBody}</h2>
+                            {
+                                questionInfo.ans === "" ?
+                                    <>
+                                        <form onSubmit={submitHandler} className='dialog-form-container'>
+                                            <textarea
+                                                className="answer-input"
+                                                placeholder='Give your answer'
+                                                value={ans}
+                                                onChange={(e) => setAns(e.target.value)} />
+                                            <button type='submit' className="submit-button">Submit</button>
+                                        </form>
+                                    </>
+                                    :
+                                    <>
+                                        <div className='dialog-answer-container'>
+                                            <h4>Answer of the question</h4>
+                                            <h2>{questionInfo.ans}</h2>
+                                        </div>
+
+                                    </>
+                            }
+
+                        </div>
+                    </Dialog>
+                </>
+            )}
+        </div>
+    );
+};
+
+export default Question;
+
+
+const ShowQuestion = ({ data, openDialogHandler, typeQuestion }) => {
+    return (
+        <>
+            {data.length === 0 ? (
+                <h1>No questions for this domain</h1>
+            ) : (
+                <>
+
+                    <InputLabel id="dropdown-label">{typeQuestion}</InputLabel>
+                    <FormControl className="question-dropdown" >
+
+                        <Select>
+                            {data.map((value, index) => (
+                                <MenuItem key={index}>
+                                    <button
+                                        key={index}
+                                        onClick={() => openDialogHandler(value)}
+                                        className="question-content-button"
+                                    >
+                                        <h3>{value.messageBody}</h3>
+                                    </button>
+                                </MenuItem>
+                            ))}
+
+                        </Select>
+                    </FormControl>
+                </>)}
+        </>
+    )
+}
