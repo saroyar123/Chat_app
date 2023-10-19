@@ -149,3 +149,66 @@ exports.createQuestion = async (req, res) => {
     });
   }
 };
+
+
+// get user questions
+exports.getUserQuestion=async(req,res)=>{
+    try {
+      
+        const {userId}=req.body
+        const Question=await question.find({userID:userId});
+        res.status(200).json({
+            success:true,
+            Question
+        })
+        
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}
+
+// active question of every domain
+exports.activeQuestions=async(req,res)=>{
+  try {
+    
+    const domainArray = ["payment", "loan", "account", "card", "emi"];
+    const Question=await question.find();
+    const activeQuestionMap=new Map();
+
+    // find the count of the questions in a domain
+     domainArray.map((value)=>{
+        let c=0;
+        const regexPattern = new RegExp(`\\b${value}\\b`, "gi");
+        Question.map((ques)=>{
+          if(regexPattern.test(ques.messageBody)&&ques.ans==="")
+           c=c+1;
+        })
+        
+       activeQuestionMap.set(value,c);
+    })
+
+    // find out the number of question that are 
+    let c=0;
+    Question.map((value) => {
+      if (areWordsNotPresentInString(domainArray, value.messageBody)&&value.ans==="") {
+        c=c+1;
+      }
+    })
+    activeQuestionMap.set("others",c);
+
+    const questionMap=[...activeQuestionMap];
+    res.status(200).json({
+      success:true,
+      questionMap
+    })
+
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+  });
+  }
+}
