@@ -132,6 +132,14 @@
   padding-bottom: 30px;
 }
 
+.submit-container{
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ padding: 40px;
+ flex-direction: column;
+}
+
 
 .answer-input {
   padding: 10px;

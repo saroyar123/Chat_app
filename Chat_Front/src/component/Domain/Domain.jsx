@@ -22,7 +22,7 @@ const Domain = () => {
     };
 
     useEffect(()=>{
-        axios.get("http://localhost:4000/api/v1/activeQues")
+        axios.get("https://chat-app-backend-k0z2.onrender.com/api/v1/activeQues")
         .then((response)=>{
             setData(response.data)
             console.log(data)

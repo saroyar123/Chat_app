@@ -13,7 +13,7 @@ const UserQuestion = () => {
 
     const submitHandler = async (e) => {
         e.preventDefault();
-        const response = await axios.post("http://localhost:4000/api/v1/getAns", { userId });
+        const response = await axios.post("https://chat-app-backend-k0z2.onrender.com/api/v1/getAns", { userId });
         setData(response.data)
     }
 

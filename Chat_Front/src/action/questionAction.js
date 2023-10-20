@@ -7,7 +7,7 @@ export const getQuestionAction=(domain)=>async(dispatch)=>{
             type:"getQuestionRequest"
         })
 
-        const {data}= await axios.get(`http://localhost:4000/api/v1/quesFilter/${domain}`);
+        const {data}= await axios.get(`https://chat-app-backend-k0z2.onrender.com/api/v1/quesFilter/${domain}`);
         dispatch({
             type:"getQuestionSuccess",
             payload:data
@@ -27,7 +27,7 @@ export const similarQuestionAction=(askQuestion)=>async(dispatch)=>{
             type:"getSimilarQuestionRequest"
         })
 
-        const {data}=await axios.post("http://localhost:4000/api/v1/similarQuestion",{askQuestion:askQuestion})
+        const {data}=await axios.post("https://chat-app-backend-k0z2.onrender.com/api/v1/similarQuestion",{askQuestion:askQuestion})
         console.log(data)
         dispatch({
             type:"getSimilarQuestionSuccess",

@@ -11,37 +11,48 @@ import Footer from '../Footer/Footer';
 const Question = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [ans, setAns] = useState('');
+    const [ansSubmit, setAnsSubmit] = useState(1)
     const [questionInfo, setQuestionInfo] = useState({});
     const [askQuestion, setAskQuestion] = useState("")
     const [userId, setUserId] = useState("")
     const dispatch = useDispatch();
     const [client, setClient] = useState("")
+    const [rerender, setRerender] = useState(1)
     const [success, setSuccess] = useState(1);
     const { loading, data } = useSelector((state) => state.question);
     const { data: simiData, loading: simiLoading } = useSelector((state) => state.similarQuestion)
-
+    const domain = sessionStorage.getItem("domain");
     useEffect(() => {
         setClient(sessionStorage.getItem("role"))
-        const domain = sessionStorage.getItem("domain");
+
         console.log(domain, client)
         dispatch(getQuestionAction(domain));
     }, [dispatch, getQuestionAction]);
 
-    const submitHandler = (e) => {
-        e.preventDefault();
-        console.log();
-        // Your axios post request here
+    const submitHandler = async () => {
+        console.log(questionInfo)
+        const response = await axios.post("https://chat-app-backend-k0z2.onrender.com/api/v1/question", { answer: ans, id: questionInfo._id });
+        if (response.data.success === true) {
+            setAnsSubmit(2)
+        }
+        else {
+            setAnsSubmit(3);
+        }
+
+        dispatch(getQuestionAction(domain));
+
     };
 
     const askQuestioHandler = async (e) => {
         e.preventDefault();
         setSuccess(2);
-        const response = await axios.post("http://localhost:4000/api/v1/addQuestion", { userId, askQuestion });
+        const response = await axios.post("https://chat-app-backend-k0z2.onrender.com/api/v1/addQuestion", { userId, askQuestion });
         console.log(response)
         if (response.data.success == true)
             setSuccess(3);
         else
-            setSuccess(4)
+            setSuccess(4);
+
 
     }
 
@@ -54,6 +65,8 @@ const Question = () => {
     const closeDialogHandler = () => {
         setOpenDialog(false);
         setQuestionInfo({});
+        setAnsSubmit(1);
+        setAns("")
     };
 
     return (
@@ -138,33 +151,57 @@ const Question = () => {
                         </>
                         <Dialog onClose={closeDialogHandler} open={openDialog}>
                             <div >
-                                <h2 className='dialog-question-container'>{questionInfo.messageBody}</h2>
-                                 {
-                                    questionInfo.ans === "" ?(client!=="client"?
-                                         <>
-                                            <form onSubmit={submitHandler} className='dialog-form-container'>
-                                                <textarea
-                                                    className="answer-input"
-                                                    placeholder='Give your answer'
-                                                    value={ans}
-                                                    onChange={(e) => setAns(e.target.value)} />
-                                                <button type='submit' className="submit-button">Submit</button>
-                                            </form>
-                                    </>:
-                                       <>
-                                        <h4 className='dialog-answer-container'>Answer will be update</h4>
-                                        </>)
-                                        :
-                                        <>
-                                            <div className='dialog-answer-container'>
-                                                <h4>Answer of the question</h4>
-                                                <h2>{questionInfo.ans}</h2>
-                                            </div>
+                                {
+                                    ansSubmit === 1 ? <>
+                                        <h2 className='dialog-question-container'>{questionInfo.messageBody}</h2>
+                                        {
+                                            questionInfo.ans === "" ? (client !== "client" ?
+                                                <>
+                                                    <form onSubmit={(e) => {
+                                                        e.preventDefault();
+                                                        submitHandler()
+                                                        setRerender(rerender => rerender + 1)
+                                                    }
+                                                    }
+                                                        className='dialog-form-container'>
+                                                        <textarea
+                                                            className="answer-input"
+                                                            placeholder='Give your answer'
+                                                            value={ans}
+                                                            onChange={(e) => setAns(e.target.value)} />
+                                                        <button type='submit' className="submit-button">Submit</button>
+                                                    </form>
+                                                </> :
+                                                <>
+                                                    <h4 className='dialog-answer-container'>Answer will be update</h4>
+                                                </>)
+                                                :
+                                                <>
+                                                    <div className='dialog-answer-container'>
+                                                        <h4>Answer of the question</h4>
+                                                        <h2>{questionInfo.ans}</h2>
+                                                    </div>
 
+                                                </>
+
+                                        }
+                                    </> :
+                                        <>
+                                            {
+                                                ansSubmit === 2 ?
+                                                    <div className='submit-container'>
+                                                        <button onClick={closeDialogHandler} >Answer Another</button>
+                                                        <h1>Answer submited</h1>
+                                                    </div> :
+                                                    <div className='submit-container'>
+                                                        <button onClick={closeDialogHandler} >Try Again</button>
+                                                        <h1>Something is worng</h1>
+                                                    </div>
+                                            }
                                         </>
-                                  
                                 }
-                               
+
+
                             </div>
                         </Dialog>
                     </>
